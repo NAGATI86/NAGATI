@@ -1,0 +1,3 @@
+exercices
+nano readme.md
+
