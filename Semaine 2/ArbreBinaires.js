@@ -15,6 +15,6 @@ this.gauche.ajouter(valeur)
 NoeudPapillon = new Noeud(6)
 console.log(noeudPapillon)
 }
-trouver(valeur)
+
 
 }
