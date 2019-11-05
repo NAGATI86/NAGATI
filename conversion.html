@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Converssion numric</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Styles -->
+    <style>
+        body {
+            padding-top: 20px;
+        }
+
+        h1 {
+            margin: 20px 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <section>
+        <h1 class="m-3"> CONVERSION </h1>
+        <div class="card mx-3">
+            <form class="card-body">
+                <div class="form-group">
+                    <label form="Hexconversion">Entre un numbre <select id="ddlViewBy">
+                            <option value="1">Binaire</option>
+                            <option value="2" selected="selected">decimal</option>
+                            <option value="3">hex</option>
+                        </select></label>
+                    <input type="text" class="form-control" name="input" id="newInput" value="" />
+                </div>
+
+            </form>
+
+        </div>
+
+        <div class="card mx-3">
+
+            <ul class="list-group m-3">
+                <li class="list-group-item" id="alertMessage"></li>
+            </ul>
+
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h1>Liste de conversion</h1>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Binaire</th>
+                                <th scope="col">Décimal</th>
+                                <th scope="col">Hexadécimal</th>
+                                <th scope="col">Hexadécimal little endian</th>
+                                <th scope="col">Hexadécimal big endian</th>
+                                <th scope="col">VarInt</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="col" id="binNumbre"></th>
+                                <th scope="col" id="decNumbre"></th>
+                                <th scope="col" id="hexNumbre"></th>
+                                <th scope="col" id="leNumbre"></th>
+                                <th scope="col" id="beNumbre"></th>
+                                <th scope="col" id="varInt">varInt</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script>
+
+
+
+
+        class Converteur {
+
+            constructor() {
+                this.decimal = '';
+                this.hex = '';
+                this.binary = ''
+                this.BE = '0x';
+                this.LE = '0x';
+                this.varInt = '';
+                this.message = '';
+                this.hexLen = 0;
+            }
+
+            verify(newInput, strUser) {
+
+
+                switch (strUser) {
+                    case '1':
+                        {
+                            if (this.isBin(newInput)) {
+                                this.binary = newInput;
+                                this.decimal = this.convert.bin2dec(newInput);
+                                this.hex = this.convert.bin2hex(newInput);
+                                this.hexLen = this.hex.length;
+                                var beLe = this.beAndLeNumbre(this.convert.bin2hex(newInput));
+                                this.BE = beLe[0];
+                                this.LE = beLe[1]
+                                this.message = " Binary: " + this.binary + " Decimal: " + this.decimal + " Hex: " + this.hex;
+                            } else { this.message = " Attention l'entre ne pas un numbre binaire!" }
+
+                            return [this.decimal, this.hex, this.BE, this.LE, this.message, this.binary]
+                            break;
+                        }
+
+                    case '2': {
+
+                        if (this.isNumeric(newInput)) {
+                            this.binary = this.convert.dec2bin(newInput);
+                            this.decimal = newInput;
+                            this.hex = this.convert.dec2hex(newInput);
+                            this.hexLen = this.hex.length;
+                            var beLe = this.beAndLeNumbre(this.convert.dec2hex(newInput));
+                            this.BE = beLe[0];
+                            this.LE = beLe[1]
+                            this.message = " Binary: " + this.binary + " Decimal: " + this.decimal + " Hex: " + this.hex;
+                        } else { this.message = " Attention l'entre ne pas un numbre decimal!" }
+
+                        return [this.decimal, this.hex, this.BE, this.LE, this.message, this.binary]
+                        break
+                    }
+
+                    case '3': {
+
+                        if (this.isHex(newInput)) {
+                            this.binary = this.convert.hex2bin(newInput);
+                            this.decimal = this.convert.hex2dec(newInput);
+                            this.hex = newInput;
+                            this.hexLen = this.hex.length;
+                            var beLe = this.beAndLeNumbre(newInput);
+                            this.BE = beLe[0];
+                            this.LE = beLe[1]
+                            this.message = " Binary: " + this.binary + " Decimal: " + this.decimal + " Hex: " + this.hex;
+                        } else {
+
+                            this.message = " Attention l'entre ne pas un numbre Hexdicimal!";
+
+                        }
+                        console.log([this.decimal, this.hex, this.BE, this.LE, this.message, this.binary])
+                        return [this.decimal, this.hex, this.BE, this.LE, this.message, this.binary]
+
+                        break;
+                    }
+                    
+                }
+
+
+
+
+
+            }
+
+            beAndLeNumbre(hex) {
+                var beNumbre = '0x '
+                var leNumbre = '0x '
+                if (hex !== '') {
+                    var number = hex;
+                    if (number.length % 2 === 0) {
+                        number = number.match(/../g);
+                    } else {
+                        number = "0" + number
+                        number = number.match(/../g);
+                    }
+
+                    for (let i = 0; i < number.length; i++) {
+                        beNumbre = beNumbre  + number[i] + " ";
+                        leNumbre = leNumbre + number[number.length - (i + 1)] + " ";
+                    }
+
+                }
+
+                return [beNumbre, leNumbre]
+
+
+            }
+
+            isHex(newInput) {
+                var a = parseInt(newInput, 16);
+                return (a.toString(16) === newInput)
+            }
+
+            isNumeric(newInput) {
+                var RE = /^-{0,1}\d*\.{0,1}\d+$/;
+                return (RE.test(newInput));
+            }
+
+            isBin(testValue) {
+                var test = testValue
+                return (test.search(/^[10]+$/) != -1)
+
+
+            }
+
+            convert = {
+                bin2dec: s => parseInt(s, 2).toString(10),
+                bin2hex: s => parseInt(s, 2).toString(16),
+                dec2bin: s => parseInt(s, 10).toString(2),
+                dec2hex: s => parseInt(s, 10).toString(16),
+                hex2bin: s => parseInt(s, 16).toString(2),
+                hex2dec: s => parseInt(s, 16).toString(10)
+            };
+        }
+
+
+
+
+
+        var decimal = document.getElementById('decNumbre');
+        var hex = document.getElementById('hexNumbre');
+        var BE = document.getElementById('beNumbre');
+        var LE = document.getElementById('leNumbre');
+        var message = document.getElementById('alertMessage');
+        var newInput = document.getElementById('newInput');
+        var bin = document.getElementById('binNumbre');
+        var e = document.getElementById("ddlViewBy");
+
+
+
+        newInput.addEventListener("input", function (event) {
+
+            var strUser = e.options[e.selectedIndex].value;
+            var input = document.getElementById('newInput').value
+            var c = new Converteur();
+            console.log(input);
+            var result = c.verify(input, strUser);
+            message.innerHTML = result[4];
+            hex.innerHTML = result[1];
+            decimal.innerHTML = result[0];
+            BE.innerHTML = result[2];
+            LE.innerHTML = result[3];
+            bin.innerHTML = result[5]
+
+            event.preventDefault();
+
+        }, false);
+
+
+
+
+
+    </script>
+</body>
+
+</html>
